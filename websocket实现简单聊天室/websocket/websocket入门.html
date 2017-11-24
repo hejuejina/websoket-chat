@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .new-div__style{
+            margin: 5px 5px;
+            padding: 5px 8px ;
+            max-width: 200px;
+            border: 1px solid #ccc;
+            background-color: #ccc;
+            /* color:green; */
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>websocket入门案例</h1>
+    <input type="text" id="sendMsg"><br>
+    <button id="sendBtn">发送</button>
+    <div id="message"></div>
+    <script>
+        var websocket = new WebSocket("ws://localhost:3000/");  //开始连接
+
+        // 封装创建div函数
+        function createDiv(string,type){
+            var newDiv = document.createElement('div');
+            newDiv.classList.add('new-div__style');
+            newDiv.innerHTML = string;
+            if(type == 'enter'){
+                newDiv.style.color = "green"
+            }else if(type == 'leave'){
+                newDiv.style.color = "red"
+            }
+            document.body.appendChild(newDiv);
+        }
+        websocket.onopen = function(){  //
+            console.log('websocket open');
+            document.getElementById('message').innerHTML = "connected";
+        }
+        websocket.onclose = function(){
+            console.log('websocket close');
+        }
+
+        document.getElementById('sendBtn').onclick = function(){
+            var txt = document.getElementById('sendMsg').value;
+            if(txt){
+                websocket.send(txt);  //发送消息
+            }
+        }
+
+        websocket.onmessage = function(e){  //接收消息的回调函数
+            console.log(e.data);
+            var mes = JSON.parse(e.data);
+            createDiv(mes.data,mes.type);
+            // document.getElementById('message').innerHTML = e.data ;
+        }
+    </script>
+</body>
+</html>
